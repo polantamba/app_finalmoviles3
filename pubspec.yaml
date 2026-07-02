@@ -9,7 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^1.6.0
   supabase_flutter: ^2.15.3
+  url_launcher: ^6.3.2
   video_player: ^2.11.1
 
 dev_dependencies:
