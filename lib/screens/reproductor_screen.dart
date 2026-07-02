@@ -32,6 +32,15 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
     }
   }
 
+  String _limpiarUrlDropbox(String url) {
+    if (url.contains("dropbox.com")) {
+      String urlLimpia = url.split('?')[0];
+      urlLimpia = urlLimpia.replaceAll("www.dropbox.com", "dl.dropboxusercontent.com");
+      return urlLimpia;
+    }
+    return url;
+  }
+
   Future<void> _cargarVideo(String url) async {
     setState(() {
       _inicializado = false;
@@ -40,7 +49,13 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
 
     try {
       _controller?.dispose();
-      _controller = VideoPlayerController.networkUrl(Uri.parse(url));
+      
+      String urlProcesada = _limpiarUrlDropbox(url);
+      
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(urlProcesada),
+      );
+      
       await _controller!.initialize();
       
       if (mounted) {
@@ -58,8 +73,8 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
     }
   }
 
-  Future<void> _abrirTrailer(String url) async {
-    final Uri uri = Uri.parse(url);
+  Future<void> _abrirEnlaceExterno(String url) async {
+    final Uri uri = Uri.parse(_limpiarUrlDropbox(url));
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -83,13 +98,24 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (_errorVideo)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Text(
-                  "El emulador no cuenta con los códecs necesarios o el archivo de video de Dropbox es inaccesible.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    const Text(
+                      "Tu entorno actual no soporta el reproductor integrado.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
+                    const SizedBox(height: 15),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                      onPressed: () => _abrirEnlaceExterno(_urlPelicula),
+                      icon: const Icon(Icons.open_in_new, color: Colors.white),
+                      label: const Text("Reproducir externamente", style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
                 ),
               ),
             )
@@ -155,7 +181,7 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
                   backgroundColor: const Color(0xFF222222),
                   padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
                 ),
-                onPressed: () => _abrirTrailer(_urlTrailer),
+                onPressed: () => _abrirEnlaceExterno(_urlTrailer),
                 icon: const Icon(Icons.local_movies, color: Colors.white),
                 label: const Text("Ver Tráiler (YouTube)", style: TextStyle(color: Colors.white)),
               ),

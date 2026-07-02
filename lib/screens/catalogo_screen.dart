@@ -13,7 +13,7 @@ class CatalogoScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "PolFlix",
+          "MOVIESTREAM",
           style: TextStyle(
             color: Colors.redAccent,
             fontSize: 28,

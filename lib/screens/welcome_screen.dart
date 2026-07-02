@@ -24,7 +24,7 @@ class WelcomeScreen extends StatelessWidget {
                 const Icon(Icons.movie_creation_outlined, size: 80, color: Colors.redAccent),
                 const SizedBox(height: 20),
                 const Text(
-                  "PolFlix",
+                  "MOVIESTREAM",
                   style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, letterSpacing: 2),
                 ),
                 const Text(
