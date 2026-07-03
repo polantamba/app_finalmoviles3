@@ -126,7 +126,7 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
                     ),
                     const SizedBox(height: 15),
                     ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 82, 255, 223)),
                       onPressed: () => _abrirEnlaceExterno(_urlPelicula),
                       icon: const Icon(Icons.open_in_new, color: Colors.white),
                       label: const Text("Reintentar externamente", style: TextStyle(color: Colors.white)),
@@ -147,7 +147,7 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
                 _controller!,
                 allowScrubbing: true,
                 colors: const VideoProgressColors(
-                  playedColor: Colors.redAccent,
+                  playedColor: Color.fromARGB(255, 82, 255, 235),
                   bufferedColor: Colors.white24,
                   backgroundColor: Colors.white12,
                 ),
@@ -172,14 +172,14 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
               ],
             ),
           ] else
-            const Center(child: CircularProgressIndicator(color: Colors.redAccent)),
+            const Center(child: CircularProgressIndicator(color: Color.fromARGB(255, 82, 255, 220))),
           const SizedBox(height: 40),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: const Color.fromARGB(255, 96, 221, 225),
                   padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
                 ),
                 onPressed: () {

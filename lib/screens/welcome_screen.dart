@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -6,53 +7,139 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF141414),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.network(
-            'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1925&auto=format&fit=crop',
-            fit: BoxFit.cover,
-            color: Colors.black.withOpacity(0.7),
-            colorBlendMode: BlendMode.darken,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(Icons.movie_creation_outlined, size: 80, color: Colors.redAccent),
-                const SizedBox(height: 20),
-                const Text(
-                  "MOVIESTREAM",
-                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, letterSpacing: 2),
-                ),
-                const Text(
-                  "Todas tus películas favoritas en un solo lugar.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
-                ),
-                const SizedBox(height: 50),
-                FilledButton(
-                  onPressed: () => Navigator.pushNamed(context, "/login"),
-                  child: const Text("Iniciar Sesión", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ),
-                const SizedBox(height: 15),
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white54, width: 2),
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => Navigator.pushNamed(context, "/registro"),
-                  child: const Text("Crear Cuenta", style: TextStyle(fontSize: 18)),
-                ),
-                const SizedBox(height: 40),
-              ],
+          _buildBackground(),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Spacer(),
+                  _buildHeaderTexts(),
+                  const Spacer(),
+                  _buildLoginButton(context),
+                  const SizedBox(height: 15),
+                  _buildRegisterButton(context),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBackground() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          'assets/img/fondo.jpg',
+          fit: BoxFit.cover,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.5),
+                Colors.black.withValues(alpha: 0.8),
+                const Color(0xFF141414),
+              ],
+              stops: const [0.0, 0.6, 1.0],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderTexts() {
+    return Column(
+      children: [
+        const Icon(
+          Icons.movie_creation_outlined,
+          size: 80,
+          color: Color(0xFF00F5D4),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          "MOVIESTREAM",
+          style: GoogleFonts.poppins(
+            fontSize: 40,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+            letterSpacing: 2,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          "Todas tus películas favoritas\nen un solo lugar.",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(
+            color: Colors.white70,
+            fontSize: 16,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 55,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF00F5D4),
+          foregroundColor: Colors.black,
+          elevation: 8,
+          shadowColor: const Color(0xFF00F5D4).withValues(alpha: 0.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        onPressed: () => Navigator.pushNamed(context, "/login"),
+        child: Text(
+          "INICIAR SESIÓN",
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRegisterButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 55,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: const Color(0xFF00F5D4),
+          side: const BorderSide(color: Color(0xFF00F5D4), width: 2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        onPressed: () => Navigator.pushNamed(context, "/registro"),
+        child: Text(
+          "CREAR CUENTA",
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
       ),
     );
   }
