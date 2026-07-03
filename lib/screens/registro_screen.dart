@@ -139,14 +139,21 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
     setState(() => _isLoading = true);
     
     try {
-      await supabase.auth.signUp(
+      final AuthResponse respuestaAuth = await supabase.auth.signUp(
         email: correo.text.trim(),
         password: contrasenia.text.trim(),
-        data: {
+      );
+      
+      final String? idUsuario = respuestaAuth.user?.id;
+
+      if (idUsuario != null) {
+        await supabase.from('perfiles').insert({
+          'id': idUsuario,
           'nick': nick.text.trim(),
           'edad': int.tryParse(edad.text.trim()) ?? 0,
-        }
-      );
+          'correo': correo.text.trim(),
+        });
+      }
       
       if (mounted) Navigator.pushReplacementNamed(context, "/login");
       
@@ -158,6 +165,17 @@ class _FormularioRegistroState extends State<FormularioRegistro> {
             backgroundColor: const Color(0xFF222222),
             title: const Text("Error de Registro", style: TextStyle(color: Colors.redAccent)),
             content: Text(e.message, style: const TextStyle(color: Colors.white)),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: const Color(0xFF222222),
+            title: const Text("Error Inesperado", style: TextStyle(color: Colors.redAccent)),
+            content: Text(e.toString(), style: const TextStyle(color: Colors.white)),
           ),
         );
       }
