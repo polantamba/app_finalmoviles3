@@ -34,9 +34,26 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
 
   String _limpiarUrlDropbox(String url) {
     if (url.contains("dropbox.com")) {
-      String urlLimpia = url.split('?')[0];
-      urlLimpia = urlLimpia.replaceAll("www.dropbox.com", "dl.dropboxusercontent.com");
-      return urlLimpia;
+      String urlProcesada = url.replaceAll("www.dropbox.com", "dl.dropboxusercontent.com");
+      List<String> partes = urlProcesada.split('?');
+      String urlBase = partes[0];
+      
+      if (partes.length > 1) {
+        List<String> parametros = partes[1].split('&');
+        String rlkey = "";
+        
+        for (var param in parametros) {
+          if (param.startsWith("rlkey=")) {
+            rlkey = param;
+            break;
+          }
+        }
+        
+        if (rlkey.isNotEmpty) {
+          return "$urlBase?$rlkey&raw=1";
+        }
+      }
+      return "$urlBase?raw=1";
     }
     return url;
   }
@@ -49,7 +66,6 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
 
     try {
       _controller?.dispose();
-      
       String urlProcesada = _limpiarUrlDropbox(url);
       
       _controller = VideoPlayerController.networkUrl(
@@ -104,7 +120,7 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
                 child: Column(
                   children: [
                     const Text(
-                      "Tu entorno actual no soporta el reproductor integrado.",
+                      "Error de reproducción. Revisa los permisos de tu enlace de Dropbox.",
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white70, fontSize: 16),
                     ),
@@ -113,7 +129,7 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
                       onPressed: () => _abrirEnlaceExterno(_urlPelicula),
                       icon: const Icon(Icons.open_in_new, color: Colors.white),
-                      label: const Text("Reproducir externamente", style: TextStyle(color: Colors.white)),
+                      label: const Text("Reintentar externamente", style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
@@ -157,9 +173,7 @@ class _ReproductorScreenState extends State<ReproductorScreen> {
             ),
           ] else
             const Center(child: CircularProgressIndicator(color: Colors.redAccent)),
-          
           const SizedBox(height: 40),
-          
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
