@@ -1,6 +1,7 @@
-  import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class CatalogoScreen extends StatelessWidget {
   const CatalogoScreen({super.key});
@@ -8,14 +9,14 @@ class CatalogoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF141414), // Fondo oscuro
+      backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
           "MOVIESTREAM",
           style: TextStyle(
-            color: Color(0xFF00F5D4), // Color turquesa
+            color: Color(0xFF00F5D4),
             fontSize: 28,
             fontWeight: FontWeight.w900,
             letterSpacing: 2,
@@ -24,9 +25,9 @@ class CatalogoScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         centerTitle: true,
       ),
-      body: Column(
+      body: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Text(
@@ -56,27 +57,40 @@ class ListaPeliculas extends StatelessWidget {
     }
   }
 
+  Future<void> _abrirTrailerExterno(String url) async {
+    if (url.isEmpty) return;
+    String urlProcesada = url;
+    if (url.contains("dropbox.com")) {
+      urlProcesada = url.replaceAll("www.dropbox.com", "dl.dropboxusercontent.com");
+    }
+    final Uri uri = Uri.parse(urlProcesada);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   void _mostrarDetalles(BuildContext context, dynamic pelicula) {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Permite que el modal ocupe más espacio si es necesario
+      isScrollControlled: true,
       backgroundColor: const Color(0xFF222222),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final trailerUrl = pelicula['trailer_url'] ?? pelicula['tracker_url'] ?? '';
+
         return Padding(
           padding: EdgeInsets.only(
             left: 20,
             right: 20,
             top: 20,
-            bottom: MediaQuery.of(context).padding.bottom + 20, // Respeta el safe area del celular
+            bottom: MediaQuery.of(context).padding.bottom + 20,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Pequeña barra superior del modal
               Center(
                 child: Container(
                   width: 50,
@@ -88,8 +102,6 @@ class ListaPeliculas extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              
-              // Imagen de portada
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
@@ -105,8 +117,6 @@ class ListaPeliculas extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              
-              // Título
               Text(
                 pelicula['titulo'] ?? 'Desconocido',
                 style: const TextStyle(
@@ -116,15 +126,11 @@ class ListaPeliculas extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              
-              // Descripción
               Text(
                 pelicula['descripcion'] ?? 'Sin descripción disponible.',
                 style: const TextStyle(fontSize: 14, color: Colors.white70, height: 1.5),
               ),
               const SizedBox(height: 30),
-              
-              // Botones de acción
               Row(
                 children: [
                   Expanded(
@@ -136,15 +142,14 @@ class ListaPeliculas extends StatelessWidget {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () {
-                        Navigator.pop(context); // Cierra el modal
+                        Navigator.pop(context);
                         Navigator.pushNamed(
                           context,
                           "/reproductor",
                           arguments: {
                             'titulo': pelicula['titulo'],
                             'video_url': pelicula['video_url'],
-                            // Uso 'tracker_url' como respaldo por un typo en el JSON de Titanic
-                            'trailer_url': pelicula['trailer_url'] ?? pelicula['tracker_url'],
+                            'trailer_url': trailerUrl,
                           },
                         );
                       },
@@ -162,8 +167,8 @@ class ListaPeliculas extends StatelessWidget {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () {
-                        Navigator.pop(context); // Cierra el modal
-                        // Aquí puedes añadir la lógica específica para abrir el tráiler si lo manejas en otra vista
+                        Navigator.pop(context);
+                        _abrirTrailerExterno(trailerUrl);
                       },
                       icon: const Icon(Icons.movie_creation_outlined),
                       label: const Text("Ver Tráiler", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
@@ -204,7 +209,7 @@ class ListaPeliculas extends StatelessWidget {
             final pelicula = data[index];
 
             return GestureDetector(
-              onTap: () => _mostrarDetalles(context, pelicula), // Abre el modal aquí
+              onTap: () => _mostrarDetalles(context, pelicula),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
